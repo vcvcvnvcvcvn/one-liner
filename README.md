@@ -1,4 +1,4 @@
-# ol - One-liner Command Assistant
+# One-liner: Command Assistant
 
 A natural language to terminal command tool that serves as an intermediate layer between users and the terminal.
 

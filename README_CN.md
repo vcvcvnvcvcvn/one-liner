@@ -1,4 +1,4 @@
-# ol - One-liner Command Assistant
+# One-liner: Command Assistant
 
 一个自然语言转终端命令的工具，成为用户和 terminal 之间的中间层。
 
