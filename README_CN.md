@@ -45,8 +45,6 @@ make build-all
 | Linux | arm64 | `ol-linux-arm64` |
 | macOS | amd64 (Intel) | `ol-darwin-amd64` |
 | macOS | arm64 (Apple Silicon) | `ol-darwin-arm64` |
-| Windows | amd64 | `ol-windows-amd64.exe` |
-| Windows | arm64 | `ol-windows-arm64.exe` |
 
 ### 手动交叉编译
 
@@ -59,9 +57,6 @@ GOOS=darwin GOARCH=arm64 go build -o ol-darwin-arm64 .
 
 # Linux
 GOOS=linux GOARCH=amd64 go build -o ol-linux-amd64 .
-
-# Windows
-GOOS=windows GOARCH=amd64 go build -o ol-windows.exe .
 ```
 
 ## 使用方法
@@ -134,7 +129,7 @@ ol --version   # 显示版本
 - 🔄 按 `r` 键重新生成不同风格的命令
 - 🐚 自动检测并使用当前 shell 执行命令
 - 🔒 配置文件权限设置为 0600（仅用户可读）
-- 🌐 跨平台支持：Linux、macOS、Windows
+- 🌐 跨平台支持：Linux、macOS
 
 ## 系统提示词 (System Prompt)
 

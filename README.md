@@ -45,8 +45,6 @@ This project supports cross-compilation for multiple platforms:
 | Linux | arm64 | `ol-linux-arm64` |
 | macOS | amd64 (Intel) | `ol-darwin-amd64` |
 | macOS | arm64 (Apple Silicon) | `ol-darwin-arm64` |
-| Windows | amd64 | `ol-windows-amd64.exe` |
-| Windows | arm64 | `ol-windows-arm64.exe` |
 
 ### Manual Cross-Compilation
 
@@ -59,9 +57,6 @@ GOOS=darwin GOARCH=arm64 go build -o ol-darwin-arm64 .
 
 # Linux
 GOOS=linux GOARCH=amd64 go build -o ol-linux-amd64 .
-
-# Windows
-GOOS=windows GOARCH=amd64 go build -o ol-windows.exe .
 ```
 
 ## Usage
@@ -134,7 +129,7 @@ Configuration is saved to `~/.ol_config.json`.
 - 🔄 Press `r` to regenerate a command with different style
 - 🐚 Auto-detects and uses current shell to execute commands
 - 🔒 Configuration file permissions set to 0600 (user-readable only)
-- 🌐 Cross-platform support: Linux, macOS, Windows
+- 🌐 Cross-platform support: Linux, macOS
 
 ## System Prompt
 

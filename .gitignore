@@ -1,0 +1,31 @@
+# Build output
+/build/
+/bin/
+/dist/
+
+# Claude Code
+.claude/
+
+# Go
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Temp files
+*.tmp
+*.log

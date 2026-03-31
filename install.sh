@@ -14,21 +14,22 @@ NC='\033[0m' # No Color
 
 # Print functions
 print_info() {
-    echo -e "${GREEN}[INFO]${NC} $1"
+    printf "${GREEN}[INFO]${NC} %s\n" "$1" >&2
 }
 
 print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+    printf "${RED}[ERROR]${NC} %s\n" "$1" >&2
 }
 
 print_warning() {
-    echo -e "${YELLOW}[WARN]${NC} $1"
+    printf "${YELLOW}[WARN]${NC} %s\n" "$1" >&2
 }
 
 # Detect OS and architecture
 detect_platform() {
-    local os=$(uname -s | tr '[:upper:]' '[:lower:]')
-    local arch=$(uname -m)
+    local os arch
+    os=$(uname -s | tr '[:upper:]' '[:lower:]')
+    arch=$(uname -m)
 
     case "$os" in
         linux)
@@ -36,9 +37,6 @@ detect_platform() {
             ;;
         darwin)
             OS="darwin"
-            ;;
-        mingw*|msys*|cygwin*)
-            OS="windows"
             ;;
         *)
             print_error "Unsupported operating system: $os"
@@ -62,10 +60,6 @@ detect_platform() {
             ;;
     esac
 
-    if [ "$OS" = "windows" ]; then
-        BINARY_NAME="ol.exe"
-    fi
-
     PLATFORM="${OS}-${ARCH}"
 }
 
@@ -73,9 +67,9 @@ detect_platform() {
 get_latest_version() {
     print_info "Fetching latest release..."
 
-    if command -v curl &> /dev/null; then
+    if command -v curl >/dev/null 2>&1; then
         VERSION=$(curl -s "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-    elif command -v wget &> /dev/null; then
+    elif command -v wget >/dev/null 2>&1; then
         VERSION=$(wget -qO- "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
     else
         print_error "Neither curl nor wget found. Please install one of them."
@@ -87,35 +81,47 @@ get_latest_version() {
         exit 1
     fi
 
+    # Remove 'v' prefix if present for filename matching
+    VERSION_NO_V="${VERSION#v}"
+
     print_info "Latest version: $VERSION"
 }
 
 # Download binary
 download_binary() {
-    local download_url="https://github.com/${REPO}/releases/download/${VERSION}/ol-${PLATFORM}"
-    if [ "$OS" = "windows" ]; then
-        download_url="${download_url}.exe"
-    fi
+    local archive_name temp_dir archive_file temp_file
+    local extracted_binary_name="ol-${PLATFORM}"
+    archive_name="ol-${VERSION_NO_V}-${PLATFORM}.tar.gz"
 
-    local temp_dir=$(mktemp -d)
-    local temp_file="${temp_dir}/${BINARY_NAME}"
+    local download_url="https://github.com/${REPO}/releases/download/${VERSION}/${archive_name}"
 
-    print_info "Downloading ol-${PLATFORM}..."
+    local temp_dir
+    temp_dir=$(mktemp -d)
+    local archive_file="${temp_dir}/${archive_name}"
+
+    print_info "Downloading ${archive_name}..."
     print_info "URL: $download_url"
 
-    if command -v curl &> /dev/null; then
-        curl -sL "$download_url" -o "$temp_file" || {
+    if command -v curl >/dev/null 2>&1; then
+        curl -sL "$download_url" -o "$archive_file" || {
             print_error "Download failed"
             rm -rf "$temp_dir"
             exit 1
         }
-    elif command -v wget &> /dev/null; then
-        wget -q "$download_url" -O "$temp_file" || {
+    elif command -v wget >/dev/null 2>&1; then
+        wget -q "$download_url" -O "$archive_file" || {
             print_error "Download failed"
             rm -rf "$temp_dir"
             exit 1
         }
     fi
+
+    # Extract archive
+    print_info "Extracting archive..."
+    (cd "$temp_dir" && tar -xzf "$archive_file")
+
+    # Find the extracted binary (it's named ol-${PLATFORM} in the archive)
+    local temp_file="${temp_dir}/${extracted_binary_name}"
 
     # Make executable
     chmod +x "$temp_file"
@@ -143,8 +149,9 @@ install_binary() {
 
 # Verify installation
 verify_installation() {
-    if command -v ol &> /dev/null; then
-        local version=$(ol --version)
+    if command -v ol >/dev/null 2>&1; then
+        local version
+        version=$(ol --version)
         print_info "Installation verified: $version"
         return 0
     else
@@ -155,7 +162,7 @@ verify_installation() {
 
 # Add to PATH reminder
 path_reminder() {
-    if ! command -v ol &> /dev/null; then
+    if ! command -v ol >/dev/null 2>&1; then
         print_warning "${INSTALL_DIR} is not in your PATH"
         echo ""
         echo "Add the following line to your shell configuration file:"
@@ -179,7 +186,8 @@ main() {
 
     get_latest_version
 
-    local temp_file=$(download_binary)
+    local temp_file
+    temp_file=$(download_binary)
     install_binary "$temp_file"
 
     verify_installation

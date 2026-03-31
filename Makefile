@@ -27,9 +27,6 @@ build-all: clean
 	GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -X main.Version=$(VERSION)" -o $(BUILD_DIR)/$(BINARY_NAME)-linux-amd64 .
 	GOOS=linux GOARCH=arm64 go build -ldflags="-s -w -X main.Version=$(VERSION)" -o $(BUILD_DIR)/$(BINARY_NAME)-linux-arm64 .
 	GOOS=linux GOARCH=386 go build -ldflags="-s -w -X main.Version=$(VERSION)" -o $(BUILD_DIR)/$(BINARY_NAME)-linux-386 .
-	# Windows
-	GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -X main.Version=$(VERSION)" -o $(BUILD_DIR)/$(BINARY_NAME)-windows-amd64.exe .
-	GOOS=windows GOARCH=arm64 go build -ldflags="-s -w -X main.Version=$(VERSION)" -o $(BUILD_DIR)/$(BINARY_NAME)-windows-arm64.exe .
 	@echo "Build complete. Binaries in $(BUILD_DIR)/"
 	@ls -la $(BUILD_DIR)/
 
@@ -42,9 +39,6 @@ release: build-all
 	tar -czf $(BUILD_DIR)/release/$(BINARY_NAME)-$(VERSION)-linux-amd64.tar.gz -C $(BUILD_DIR) $(BINARY_NAME)-linux-amd64
 	tar -czf $(BUILD_DIR)/release/$(BINARY_NAME)-$(VERSION)-linux-arm64.tar.gz -C $(BUILD_DIR) $(BINARY_NAME)-linux-arm64
 	tar -czf $(BUILD_DIR)/release/$(BINARY_NAME)-$(VERSION)-linux-386.tar.gz -C $(BUILD_DIR) $(BINARY_NAME)-linux-386
-	# Create zip for Windows
-	cd $(BUILD_DIR) && zip release/$(BINARY_NAME)-$(VERSION)-windows-amd64.zip $(BINARY_NAME)-windows-amd64.exe
-	cd $(BUILD_DIR) && zip release/$(BINARY_NAME)-$(VERSION)-windows-arm64.zip $(BINARY_NAME)-windows-arm64.exe
 	@echo "Release archives created in $(BUILD_DIR)/release/"
 	@ls -la $(BUILD_DIR)/release/
 
